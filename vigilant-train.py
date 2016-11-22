@@ -9,3 +9,5 @@ if __name__ == "__main__":
         gs = GithubScraper()
     except EnvironmentError:
         sys.exit(1)
+
+    gs.get_random_repo()

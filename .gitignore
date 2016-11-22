@@ -89,4 +89,4 @@ ENV/
 .ropeproject
 
 #idea project settings
-.idea/
+.idea/*
