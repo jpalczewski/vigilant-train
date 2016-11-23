@@ -39,7 +39,7 @@ class GithubScraper(object):
         3. Returns its url.
         """
         dice = random.randint(1, MAX_REPOSITORY_ID)
-        repositories_url = "https://api.github.com/repositories?since={0}".format(str(dice))
+        repositories_url = "https://api.github.com/repositories?since={0}"+ str(dice)
 
         repo_list = requests.get(
             repositories_url,
