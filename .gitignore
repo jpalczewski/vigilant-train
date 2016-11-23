@@ -2,6 +2,8 @@
 # viligant-train config files
 config.py
 
+#result files
+result*.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -95,3 +97,4 @@ ENV/
 
 #idea project settings
 .idea/*
+.idea/
