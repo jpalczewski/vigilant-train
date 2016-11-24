@@ -1,8 +1,11 @@
 from GithubTools.GithubScraper import GithubScraper
+from GithubTools.Repository import Repository, RepositoryException
 import config
 import sys
 import click
 import requests
+
+
 
 @click.group()
 def cli():
@@ -22,9 +25,11 @@ def print_all():
         gs = GithubScraper()
     except EnvironmentError:
         sys.exit(1)
-    url = gs.get_random_repo()
-    print("Selected url:", url)
-    gs.print_all_files(url)
+    repo = gs.get_random_repo()
+
+    print("Selected url:", repo.repo_url)
+
+    repo.print_all_files()
 
 
 if __name__ == "__main__":

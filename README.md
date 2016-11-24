@@ -16,3 +16,6 @@ And installing all files provided by `requirements.txt` is nice idea, too.
 ```
 $ pip install --user -r requirements.txt
 ```
+
+## Known limitations
+It's only supporting utf-8 files now.

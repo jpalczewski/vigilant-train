@@ -4,6 +4,7 @@ import config
 import random
 import requests
 import time
+from GithubTools.Repository import Repository
 
 
 MAX_REPOSITORY_ID = 70000000
@@ -39,7 +40,7 @@ class GithubScraper(object):
         3. Returns its url.
         """
         dice = random.randint(1, MAX_REPOSITORY_ID)
-        repositories_url = "https://api.github.com/repositories?since={0}"+ str(dice)
+        repositories_url = "https://api.github.com/repositories?since="+ str(dice)
 
         repo_list = requests.get(
             repositories_url,
@@ -47,27 +48,4 @@ class GithubScraper(object):
         ).json()
         repo_url = repo_list[0]['url']
 
-        return repo_url
-
-    def print_all_files(self, repo_url):
-        """Print all files from repo_url."""
-        last_commit = requests.get(
-            repo_url + "/commits",
-            auth=(config.user, config.oauth)
-        ).json()[0]['sha']
-
-        file_tree = requests.get(
-            repo_url + "/git/trees/" + last_commit + "?recursive=1",
-            auth=(config.user, config.oauth)
-        ).json()
-        for f in file_tree['tree']:
-            print("---[CUT HERE]---")
-            blob = requests.get(f['url'],
-                                auth=(config.user, config.oauth)).json()
-            try:
-                file_content = blob['content'].replace('\n', '')
-                print(base64.b64decode(file_content).
-                      decode("utf-8"))
-            except Exception:
-                pass
-        print("---[CUT HERE]---")
+        return Repository(repo_url)
