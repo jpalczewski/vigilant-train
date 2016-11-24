@@ -9,6 +9,9 @@ from GithubTools.Repository import Repository
 
 MAX_REPOSITORY_ID = 70000000
 
+class GithubScraperException(Exception):
+    pass
+
 
 class GithubScraper(object):
     """Find random repository."""
@@ -29,7 +32,7 @@ class GithubScraper(object):
 
         except (requests.ConnectionError, requests.Timeout) as e:
             print("[!] Unrecoverable exception: ", e)
-            raise EnvironmentError
+            raise GithubScraperException(e)
 
     def get_random_repo(self):
         """Return random repository as string.

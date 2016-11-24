@@ -8,7 +8,7 @@ class RepositoryException(Exception):
 
 
 def record_print(filepath, filecontent):
-    print(filepath,"\n", filecontent)
+    print(filepath)
 
 class Repository(object):
 
@@ -31,10 +31,9 @@ class Repository(object):
             raise RepositoryException(e)
 
     def review_all_files(self, func):
-        """Print all files from repo_url."""
+        """Run func for all files from repo_url."""
 
         for f in self.file_tree['tree']:
-            print("---[CUT HERE]---")
             filepath = f['path']
 
             try:
@@ -51,9 +50,8 @@ class Repository(object):
                 print("[!] Unicode decoding error!", file=sys.stderr)
                 continue #It just cannot be decoded - PNG or other file.
             except Exception as e:
-                print("[!] Exception: ", e)
+                print("[!] Exception: ", e, file=sys.stderr)
                 pass
-        print("---[CUT HERE]---")
 
     def print_all_files(self):
         self.review_all_files(record_print)
