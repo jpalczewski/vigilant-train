@@ -14,8 +14,11 @@ class Repository(object):
 
 
     def __init__(self, url):
+
+        self.repo_url = url
+
+    def __lazy_init(self):
         try:
-            self.repo_url = url
 
             self.last_commit = requests.get(
                 self.repo_url + "/commits",
@@ -29,7 +32,7 @@ class Repository(object):
 
 
         except KeyError:
-            #empty repo
+            # empty repo
             self.last_commit = None
             self.file_tree = None
         except Exception as e:
@@ -38,6 +41,7 @@ class Repository(object):
 
     def review_all_files(self, func):
         """Run func for all files from repo_url."""
+        self.__lazy_init()
 
         for f in self.file_tree['tree']:
             filepath = f['path']
