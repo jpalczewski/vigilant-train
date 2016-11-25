@@ -27,7 +27,13 @@ class Repository(object):
                 auth=(config.user, config.oauth)
             ).json()
 
+
+        except KeyError:
+            #empty repo
+            self.last_commit = None
+            self.file_tree = None
         except Exception as e:
+            print("[!] Repository.__init__ exception:", e)
             raise RepositoryException(e)
 
     def review_all_files(self, func):

@@ -1,9 +1,11 @@
 from GithubTools.GithubScraper import GithubScraper, GithubScraperException
 from GithubTools.Repository import Repository, RepositoryException
 from FileDriver import FileDriver
+import datetime
 import config
 import sys
 import click
+import multiprocessing
 import requests
 
 
@@ -15,11 +17,18 @@ def cli():
 
 @cli.command(name="stats")
 def github_stats():
-    r = requests.get("https://api.github.com/user", auth=(config.user, config.oauth))
-    print("X-RateLimit-Remaining:",r.headers['X-RateLimit-Remaining'])
-    rate_reset = r.headers['X-RateLimit-Reset']
-    
-    print(r.headers)
+    try:
+        gs = GithubScraper()
+        limit, epoch, date = gs.get_reset_response()
+
+        print("X-RateLimit-Remaining:", limit)
+        print("X-RateLimit-Reset:", date)
+
+
+        dt = datetime.datetime.fromtimestamp(float(epoch)) - datetime.datetime.now()
+        print("Remaining time:",  dt.seconds//60, " min,", dt.seconds%60, " secs")
+    except GithubScraperException:
+        sys.exit(1)
 
 @cli.command(name="print")
 def print_all():
@@ -50,5 +59,48 @@ def save_all():
         sys.exit(1)
 
 
+def mtsave_worker(q, gs, fd):
+    remaining, boring, notuseful = gs.get_reset_response()
+    print("[MTW] Entered thread")
+    while remaining !=0:
+        repo = q.get()
+        print("[MTW] Loop,", repo.repo_url, " remaining ", remaining)
+        repo.review_all_files(fd.save_file)
+        remaining = gs.get_reset_response()
+    sys.exit(1)
+
+@cli.command(name="mtsave")
+@click.option('--number', '-n', default=8)
+@click.option('--threads', '-j', default=4)
+def mtsave(number, threads):
+    print("hello, multithreaded world")
+    try:
+        gs = GithubScraper()
+        fd = FileDriver()
+        pool = multiprocessing.Pool(processes=threads)
+        m = multiprocessing.Manager()
+        q = m.Queue()
+        repos = gs.get_random_repo_range(number)
+        results = []
+
+        for r in repos:
+            q.put(r)
+        for i in range(threads):
+            results.append(pool.apply_async(mtsave_worker, args=(q, gs, fd)))
+
+        print("After applying")
+
+        for j in results:
+            j.get()
+
+        pool.close()
+        pool.join()
+
+
+    except (GithubScraperException, RepositoryException):
+        sys.exit(1)
+
 if __name__ == "__main__":
     cli()
+
+

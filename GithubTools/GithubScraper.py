@@ -4,6 +4,7 @@ import config
 import random
 import requests
 import time
+import datetime
 from GithubTools.Repository import Repository
 
 
@@ -28,13 +29,13 @@ class GithubScraper(object):
     @staticmethod
     def __network_check():
         try:
-            requests.get('http://github.com', timeout=1)
+            requests.get('http://github.com', timeout=5)
 
         except (requests.ConnectionError, requests.Timeout) as e:
             print("[!] Unrecoverable exception: ", e)
             raise GithubScraperException(e)
 
-    def get_random_repo(self):
+    def get_random_repo_range(self, range=None):
         """Return random repository as Repository object.
 
         Algorithm:
@@ -49,6 +50,21 @@ class GithubScraper(object):
             repositories_url,
             auth=(config.user, config.oauth)
         ).json()
-        repo_url = repo_list[0]['url']
+        if range is not None:
+            repo_list = repo_list[0:range]
+        repo_range =  [Repository(x['url']) for x in repo_list]
 
-        return Repository(repo_url)
+        return repo_range
+
+    def get_random_repo(self):
+        return self.get_random_repo_range(1)[0]
+
+    def get_reset_response(self):
+        r = requests.get("https://api.github.com/user", auth=(config.user, config.oauth))
+        remaining = r.headers['X-RateLimit-Remaining']
+
+        rate_reset = r.headers['X-RateLimit-Reset']
+        rate_reset_date = datetime.datetime.fromtimestamp(int(rate_reset) / 1.0).strftime('%c')
+
+        return remaining, rate_reset, rate_reset_date
+
