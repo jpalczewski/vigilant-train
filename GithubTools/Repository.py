@@ -7,8 +7,8 @@ class RepositoryException(Exception):
     pass
 
 
-def record_print(filepath, filecontent):
-    print(filepath)
+def record_print(file_path, file_content, repo_url):
+    print(file_path)
 
 class Repository(object):
 
@@ -45,7 +45,7 @@ class Repository(object):
                     continue
                 file_content = blob['content'].replace('\n', '')
                 decoded_content = base64.b64decode(file_content).decode("utf-8")
-                func(filepath, decoded_content)
+                func(filepath, decoded_content, self.repo_url)
             except UnicodeDecodeError:
                 print("[!] Unicode decoding error!", file=sys.stderr)
                 continue #It just cannot be decoded - PNG or other file.

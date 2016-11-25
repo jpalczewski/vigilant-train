@@ -35,7 +35,7 @@ class GithubScraper(object):
             raise GithubScraperException(e)
 
     def get_random_repo(self):
-        """Return random repository as string.
+        """Return random repository as Repository object.
 
         Algorithm:
         1. Runs query for repository with random ID.
