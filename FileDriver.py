@@ -24,5 +24,5 @@ class FileDriver(object):
         if not os.path.exists(suggested_folder):
             os.makedirs(suggested_folder)
 
-        with open(suggested_path, 'w') as f:
+        with open(suggested_path, 'wb') as f:
             f.write(file_content)

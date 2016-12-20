@@ -54,9 +54,10 @@ class Repository(object):
                 if 'content' not in blob:
                     continue
                 file_content = blob['content'].replace('\n', '')
-                decoded_content = base64.b64decode(file_content).decode("utf-8")
+                decoded_content = base64.b64decode(file_content)
                 func(filepath, decoded_content, self.repo_url)
             except UnicodeDecodeError:
+                #It isn't
                 print("[!] Unicode decoding error!", file=sys.stderr)
                 continue #It just cannot be decoded - PNG or other file.
             except Exception as e:
