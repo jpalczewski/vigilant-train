@@ -1,7 +1,9 @@
 from GithubTools.GithubScraper import GithubScraper, GithubScraperException
 from GithubTools.Repository import Repository, RepositoryException
+from DeadRatioSwitch import DeadRatioSwitch
 from FileDriver import FileDriver
 import datetime
+import threading
 import config
 import sys
 import click
@@ -62,18 +64,26 @@ def save_all():
 def mtsave_worker(q, gs, fd):
     remaining, boring, notuseful = gs.get_reset_response()
     print("[MTW] Entered thread")
-    while remaining !=0:
+    while remaining !=0 or not q.empty():
         repo = q.get()
         print("[MTW] Loop,", repo.repo_url, " remaining ", remaining)
         repo.review_all_files(fd.save_file)
-        remaining = gs.get_reset_response()
+        remaining = gs.get_reset_response()[0]
     sys.exit(1)
 
 @cli.command(name="mtsave")
-@click.option('--number', '-n', default=8)
-@click.option('--threads', '-j', default=4)
+@click.option('--number', '-n', default=10)
+@click.option('--threads', '-j', default=5)
 def mtsave(number, threads):
     print("hello, multithreaded world")
+    t = []
+    try:
+        t = threading.Thread(target=DeadRatioSwitch,args=(0,))
+        t.start()
+    except Exception as e:
+        print("????? exception setting DRS:", e)
+        pass
+
     try:
         gs = GithubScraper()
         fd = FileDriver()

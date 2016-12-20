@@ -18,4 +18,4 @@ $ pip install --user -r requirements.txt
 ```
 
 ## Known limitations
-It's only supporting utf-8 files now.
+None.

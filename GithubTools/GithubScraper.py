@@ -66,5 +66,5 @@ class GithubScraper(object):
         rate_reset = r.headers['X-RateLimit-Reset']
         rate_reset_date = datetime.datetime.fromtimestamp(int(rate_reset) / 1.0).strftime('%c')
 
-        return remaining, rate_reset, rate_reset_date
+        return int(remaining), rate_reset, rate_reset_date
 
