@@ -3,7 +3,10 @@ from collections import Counter
 from multiprocessing import Pool, TimeoutError
 import re
 
-def generate_simple_stat(f):
+def generate_simple_stat(dict f):
+    cdef dict c_char
+    cdef dict c_token
+    cdef str cleaned
     if 'stats' in f.keys():
         if 'char_occurrences' in f['stats'].keys() and 'token_occurrences' in f['stats'].keys():
             return f
@@ -34,5 +37,3 @@ def run():
     files.insert_many(results, ordered=False)
 #    for r in results:
 #        files.replace_one({'_id': r['_id']}, r)
-
-run()

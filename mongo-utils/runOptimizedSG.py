@@ -1,2 +1,3 @@
-import sg
-sg.inba()
+import OptimizedSimpleGen
+
+OptimizedSimpleGen.run()
