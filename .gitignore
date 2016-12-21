@@ -2,8 +2,15 @@
 # viligant-train config files
 config.py
 
+#temporary cython files
+mongo-utils/*.c
+
+
 #result files
 data/*
+
+#file only for notes
+workbook.ipynb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
